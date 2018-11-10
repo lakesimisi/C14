@@ -1,0 +1,190 @@
+<html>
+<head>
+	<TITLE></TITLE>
+	<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+
+    <style>
+        .error{
+            color:red;
+            visibility: visible;
+        }
+        .info{
+            visibility: hidden;
+        }
+    </style>
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../js/top.js">
+
+    </script>
+    <script src="../js/tojson.js">
+
+
+    </script>
+	<script>
+		$(function(){
+		    queryCategory();
+			$("#ok").click(function(){
+			    if($("#username").val()==""){
+                    alert("用户名不能为空");
+                    return
+                }
+                if($("#password").val()==""){
+                    alert("密码不能为空");
+                    return
+                }
+                var URL="http://localhost:8080/acc/reg";
+				var a=JSON.stringify($("#form1").serializeObject());
+			    $.ajax({
+					contentType:"application/json",
+					url:URL,
+					type:"post",
+					data:a,
+					statusCode:{
+					    200:function(){
+					        window.location="../shop/login.html"
+						},404:function(){
+							alert("注册失败")
+						}
+
+					}
+
+
+				})
+			})
+
+		});
+		function queryCategory(){
+		    var URL="http://localhost:8080/pet/qCategory";
+			$.ajax({
+				url:URL,
+				type:"get",
+				statusCode:{
+				    200:function(data){
+				        $("#cat").empty()
+						var str;
+				        $(data).each(function(index,val){
+							str+="<option value='"+val.catid+"'>"+val.name+"</option>"
+						})
+						$("#cat").append(str)
+					},
+				    404:function(data){
+				        alert("失败")
+					}
+				}
+
+
+			})
+
+
+		}
+
+
+	</script>
+</head>
+<body>
+
+<div id="top"> </div>
+<div id="left" class="div1"></div>
+<form id="form1">
+	<TABLE cellpadding=10 cellspacing=0 align=center border=1 width="400"
+		bgcolor=#dddddd>
+		<TR>
+			<TD>
+				<FONT color=darkgreen>
+					<H3>
+						基本信息
+					</H3>
+				</FONT>
+				<TABLE border=0  bgcolor=#FFFF88  width="100%">
+					<TR bgcolor=#FFFF88>						
+						<TD>
+							用户名：<input type="text" name="username" id="username"/><span class="info" id="umsg">请输入用户名！</span>
+						</TD>
+					</TR>
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							密&nbsp;&nbsp;&nbsp;码:<input type="text" id="password" name="password"/>
+						</TD>
+					</TR>
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							再次输入密码:<input type="text" id="repassword" name="repassword"/>
+							<span class="info" id="pmsg">密码必须一致！</span>
+						</TD>
+					</TR>
+				</TABLE>
+
+
+
+
+
+				<FONT color=darkgreen><H3>
+					附加信息
+					</H3>
+				</FONT>
+
+				<TABLE bgcolor="#FFFF88" border=0 
+					bgcolor=#FFFF88 width="100%">
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							邮箱：<input type="text" name="email" id="email" />
+							<span class="info" id="emsg">邮箱为空或不符合！</span>
+						</TD>
+					</TR>
+					
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							姓名：<input type="text" name="xm" id="xm" />
+							<span class="info" id="xmsg">姓名不能为空！</span>
+						</TD>
+					</TR>
+					
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							地址：<input type="text" name="address" id="address" />
+						</TD>
+					</TR>
+					
+					
+				</TABLE>
+
+
+				<FONT color=darkgreen><H3>
+					爱好信息
+					</H3>
+				</FONT>
+
+				<TABLE bgcolor="#FFFF88" border=0 cellpadding=3 cellspacing=1 width="100%">
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							语种：<select id="lan" name="profile.lang">
+							<option value="eng">英语</option>
+							<option value="chi">汉语</option>
+						</select>
+						</TD>
+					</TR>
+					<TR bgcolor=#FFFF88>
+						
+						<TD>
+							宠物：<select id="cat" name="profile.catid">
+
+						</select>
+						</TD>
+					</TR>
+					
+				</TABLE>
+	</TABLE>
+</form>
+	<BR>
+	<CENTER>
+		<input border=0 type="image" src="../images/button_submit.gif" id="ok"  name="ok"/>
+	</CENTER>
+
+</body>
+</html>

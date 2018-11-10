@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/jquery-3.1.1.min.js"></script>
+
+    <script>
+        $(function(){
+            var URL="http://localhost:8080/acc/out";
+            $.ajax({
+                url:URL,
+                type:"get",
+                statusCode:{
+                    200:function(data){
+                        window.location="../shop/login.html";
+                    },
+                    404:function(){
+
+
+                    }
+                }
+
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
