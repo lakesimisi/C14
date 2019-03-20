@@ -39,9 +39,11 @@ public class InitServiceImpl {
     private CartMapper crdao;
 
 
+
     public void flushdb(){
         List list=new ArrayList();
-        rdao.executeRedisByLua(list,"flushDB.lua");
+      //  if(rdao.redisTemplate1==null) return ;
+        rdao.executeRedisByLua(rdao.redisTemplate1, list,"flushDB.lua");
     }
     public void init(){
         flushdb();
@@ -59,9 +61,9 @@ public class InitServiceImpl {
         e.createCriteria().andOrderidIsNotNull();
         List<Orders>list=odao.selectByExample(e);
         list.forEach(a->{
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat format1=new SimpleDateFormat("yyyy-MM-dd");
             if(a.getOrderdate()!=null) {
-                rdao.setString("orders:" + a.getUserid()+":"+a.getOrderid(),format.format(a.getOrderdate())+":"+a.getTotalprice());
+                rdao.setString("orders:" + a.getUserid()+":"+a.getOrderid(),format1.format(a.getOrderdate())+":"+a.getTotalprice());
             }
         });
         AccountExample example1=new AccountExample();
@@ -130,4 +132,11 @@ public class InitServiceImpl {
     }
 
 
+    public RedisMapper getRdao() {
+        return rdao;
+    }
+
+    public void setRdao(RedisMapper rdao) {
+        this.rdao = rdao;
+    }
 }

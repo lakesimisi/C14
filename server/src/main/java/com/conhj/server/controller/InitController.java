@@ -39,7 +39,6 @@ public class InitController {
             e.printStackTrace();
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 
-
         }
     }
 

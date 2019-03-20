@@ -1,5 +1,7 @@
 package com.conhj.server.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -8,10 +10,13 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.io.Serializable;
+
 @Configuration
 public class RedisConfig {
-    @Bean
-    public <T> RedisTemplate<String,T> redisTemplate(RedisConnectionFactory connectionFactory){
+
+   @Bean(name="redisTemplate2")
+    public RedisTemplate <String,Object> redisTemplate(RedisConnectionFactory connectionFactory){
         RedisTemplate redisTemplate=new RedisTemplate();
 
         redisTemplate.setConnectionFactory(connectionFactory);
@@ -19,8 +24,10 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
+
+    //@Bean(name="redisTemplate1")
     @Bean
-    public <T> RedisTemplate<String,T> redisTemplate1(RedisConnectionFactory connectionFactory){
+    public RedisTemplate<String,Object> redisTemplate1(RedisConnectionFactory connectionFactory){
         RedisTemplate redisTemplate=new RedisTemplate();
 
         redisTemplate.setConnectionFactory(connectionFactory);

@@ -30,6 +30,13 @@ spring:
     maxWait: 1000
     testOnBorrow: true
     database: 10 #    换数据库
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+    publisher-confirms: true
+    virtual-host: /
 
 
 

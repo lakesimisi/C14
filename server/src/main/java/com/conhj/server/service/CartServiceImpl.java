@@ -7,8 +7,10 @@ import com.conhj.server.model.CartKey;
 import com.conhj.server.model.Item;
 import com.conhj.server.model.Orders;
 import com.conhj.server.redis.dao.RedisMapper;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -23,13 +25,17 @@ public class CartServiceImpl {
     private OrdersMapper odao;
     @Autowired
     private RedisMapper  rdao;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
+
+
 
 
     public String addCart(Cart cart){
         boolean iu=true; //insert-true update-false
          List list=new ArrayList();
         list.add(cart.getUserid()+"");
-        List result=rdao.executeRedisByLua(list,"getMaxOrderidByUserid.lua");
+        List result= RedisMapper.executeRedisByLua(rdao.redisTemplate1, list,"getMaxOrderidByUserid.lua");
 
         String sid=result.get(0).toString().substring(1);
         String flag=result.get(0).toString().substring(0,1);
@@ -40,7 +46,7 @@ public class CartServiceImpl {
             cart.setOrderid(id);
             list.clear();
             list.add("carts:"+cart.getUserid()+":"+cart.getOrderid()+":"+cart.getItemid());
-            List ll=rdao.executeRedisByLua(list,"getQuantity.lua");
+            List ll= RedisMapper.executeRedisByLua(rdao.redisTemplate1, list,"getQuantity.lua");
             if(ll.get(0)!=null){//老商品
                 cart.setQuantity(Integer.parseInt(ll.get(0).toString())+cart.getQuantity());
                 iu=false;
@@ -71,7 +77,7 @@ public class CartServiceImpl {
         list.add(cart.getOrderid()+"");
         list.add(cart.getItemid()+"");
         list.add(cart.getQuantity()+"");
-        rdao.executeRedisByLua(list,"addCart.lua");
+        RedisMapper.executeRedisByLua(rdao.redisTemplate1, list,"addCart.lua");
         //String str=result.get(0).toString();
 
         //存储Redis orders
@@ -83,7 +89,7 @@ public class CartServiceImpl {
             list.add(flag+id);//maxid
             list.add("0"+id);
             //更新maxid
-            rdao.executeRedisByLua(list,"addOrders.lua");
+            RedisMapper.executeRedisByLua(rdao.redisTemplate1, list,"addOrders.lua");
         }
         return id+"";
     }
@@ -147,6 +153,7 @@ public class CartServiceImpl {
         System.out.println(date);
         order.setOrderdate(date);
         odao.updateByPrimaryKey(order);
+        this.rabbitTemplate.convertAndSend("topic.order",order.getUserid()+":"+order.getOrderid()+":"+order.getTotalprice());
         //update redis
         rdao.setString("maxid:"+order.getUserid(),"1"+order.getOrderid());
 
